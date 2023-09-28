@@ -44,13 +44,49 @@ func Identify(w http.ResponseWriter, r *http.Request) {
 				fmt.Println(err) // TODO: Throw a useful error on the client side
 			}
 		} else {
-			fmt.Println("multiple contacts are there", contacts)
+			// If the incoming request contains a new information,
+			// then create a new secondary contact
+			var isEmailPresent bool = false
+			var isPhonePresent bool = false
+			for _, contact := range contacts {
+				if contact.Email != nil && *contact.Email == req.Email {
+					isEmailPresent = true
+				}
+				if contact.PhoneNumber != nil && *contact.PhoneNumber == req.PhoneNumber {
+					isPhonePresent = true
+				}
+			}
+			if !isEmailPresent || !isPhonePresent {
+				newContact := models.Contact{
+					PhoneNumber:    &req.PhoneNumber,
+					Email:          &req.Email,
+					LinkPrecedence: "secondary",
+					LinkedId:       &contacts[0].Id,
+				}
+				if err := newContact.CreateContact(); err != nil {
+					fmt.Println(err) // TODO: Throw a useful error on the client side
+				}
+			} else {
+				// turn all contacts into secondary contacts except the first one
+				commonLinkedId := contacts[0].LinkedId
+				for index, contact := range contacts {
+					if index > 0 {
+						contact.LinkPrecedence = "secondary"
+						contact.LinkedId = commonLinkedId
+						if err := models.UpdateContact(&contact); err != nil {
+							fmt.Println(err) // TODO: Throw a useful error on the client side
+						}
+					}
+				}
+			}
 		}
-	} else {
-		fmt.Println(err) // TODO: Throw a useful error on the client side
 	}
 
 	// returning the response
+	writeResponse(w, req)
+}
+
+func writeResponse(w http.ResponseWriter, req IdentifyRequest) {
 	contacts, _ := models.GetContactsByEmailOrPhone(req.Email, req.PhoneNumber)
 	var res IdentifyResponse
 	res.Contact.PrimaryContactId = contacts[0].Id
