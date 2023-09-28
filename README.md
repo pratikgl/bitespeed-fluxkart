@@ -17,6 +17,7 @@ Please ensure that you have the following installed:\
 ```bash
 git clone https://github.com/pratikgl/bitespeed-fluxkart.git
 cd bitespeed-fluxkart
+go mod tidy
 ```
 
 ## Setup
