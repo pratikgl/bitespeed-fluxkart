@@ -6,7 +6,7 @@ import (
 )
 
 func Connect() *gorm.DB {
-	dsn := "root:123456@tcp(localhost:3306)/flux_kart?parseTime=True"
+	dsn := "<user_name>:<password>@tcp(localhost:3306)/<db_name>?parseTime=True"
 
 	// Open a connection to MySQL
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
