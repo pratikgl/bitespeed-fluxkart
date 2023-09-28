@@ -5,8 +5,14 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	DBUserName = "your_username"
+	DBPassword = "your_password"
+	DBName     = "your_db_name"
+)
+
 func Connect() *gorm.DB {
-	dsn := "<user_name>:<password>@tcp(localhost:3306)/<db_name>?parseTime=True"
+	dsn := DBUserName + ":" + DBPassword + "@tcp(localhost:3306)/" + DBName + "?parseTime=True"
 
 	// Open a connection to MySQL
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
